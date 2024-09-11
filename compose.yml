@@ -1,0 +1,66 @@
+services:
+  backend:
+    # Build the image from the Dockerfile in the current directory
+    build: ./backend
+
+    env_file:
+      - path: .env
+        required: false
+      - path: .backend.env
+        required: false
+
+    environment:
+      jwt_secret_key: "something-super-secret"
+      redirect_uri: "http://localhost:3000/auth/callback"
+
+    # Host the FastAPI application on port 8000
+    ports:
+      - "8000:8000"
+
+    develop:
+      # Create a `watch` configuration to update the appl
+      # https://docs.docker.com/compose/file-watch/#compose-watch-versus-bind-mounts
+      watch:
+        # Sync the working directory with the `/app` directory in the container
+        - action: sync
+          path: ./backend
+          target: /app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+          ignore:
+            - .venv/
+
+        # Rebuild the image on changes to the `pyproject.toml`
+        - action: rebuild
+          path: ./backend/pyproject.toml
+
+  frontend:
+    # Build the image from the Dockerfile in the current directory
+    build: 
+      context: ./frontend
+      target: develop
+    
+    env_file:
+      - path: .env
+        required: false
+      - path: .frontend.env
+        required: false
+
+    # Host the NextJS application on port 3000
+    ports:
+      - "3000:3000"
+
+    develop:
+      # Create a `watch` configuration to update the appl
+      # https://docs.docker.com/compose/file-watch/#compose-watch-versus-bind-mounts
+      watch:
+        # Sync the working directory with the `/app` directory in the container
+        - action: sync
+          path: ./frontend
+          target: /app
+          # Exclude the project virtual environment — it could be for a
+          # different platform in the container
+
+  #       # Rebuild the image on changes to the `pyproject.toml`
+  #       - action: rebuild
+  #         path: ./backend/pyproject.toml

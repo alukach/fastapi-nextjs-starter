@@ -1,0 +1,24 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi[standard]>=0.114.1",
+    "pydantic-settings>=2.5.2",
+    "pydantic>=2.8.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+hello = "backend:hello"
+
+[tool.uv]
+dev-dependencies = [
+    "ruff>=0.6.2",
+    "fastapi-cli>=0.0.5",
+]
